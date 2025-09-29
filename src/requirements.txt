@@ -1,12 +1,7 @@
-opencv-python-headless
+torch==2.2.0
+torchvision==0.17.1
+torchaudio==2.2.0
+streamlit
 numpy
 Pillow
-matplotlib
-streamlit
-scipy
-scikit-learn
-torch==2.2.0+cu121
-torchvision==0.17.1+cu121
-torchaudio==2.2.0+cu121
 opencv-python
-
