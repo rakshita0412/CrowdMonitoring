@@ -31,7 +31,7 @@ def get_count_and_heatmap(model, image: Image.Image, scale_small_crowds=True):
     est_count = float(density_map.sum())
 
     if scale_small_crowds and est_count < 20:
-        est_count *= 0.6
+        est_count *= 0.55
 
     est_count_rounded = round(est_count)
 
