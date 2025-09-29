@@ -25,26 +25,29 @@ def get_count_and_heatmap(model, image: Image.Image, scale_small_crowds=True):
     with torch.no_grad():
         pred = model(img_tensor)
 
-    density_map = pred.squeeze().cpu().numpy()
+   density_map = pred.squeeze().cpu().numpy()
+density_map = np.clip(density_map, 0, None)
+density_map[density_map < 0.01] = 0
 
-    density_map = np.clip(density_map, 0, None)
-    density_map[density_map < 0.01] = 0
+est_count = float(density_map.sum())
 
-    est_count = float(density_map.sum())
+if est_count <= 15:
+    scale_factor = 0.4 + 0.04 * est_count
+    est_count *= scale_factor
 
-    if scale_small_crowds and est_count < 20:
-        est_count *= 0.55
+est_count_final = max(math.ceil(est_count), 1)
 
-    est_count_final = max(math.ceil(est_count), 1)
+heatmap = density_map / (density_map.max() + 1e-8)
+heatmap_threshold = 0.08 if est_count_final <= 15 else 0.05
+heatmap[heatmap < heatmap_threshold] = 0
+heatmap = (heatmap * 255).astype(np.uint8)
 
-    heatmap = density_map / (density_map.max() + 1e-8)
-    heatmap[heatmap < 0.05] = 0 
-    heatmap = (heatmap * 255).astype(np.uint8)
-    heatmap_resized = cv2.resize(heatmap, image.size)
-    heatmap_color = cv2.applyColorMap(heatmap_resized, cv2.COLORMAP_JET)
+heatmap_resized = cv2.resize(heatmap, image.size)
+heatmap_color = cv2.applyColorMap(heatmap_resized, cv2.COLORMAP_JET)
 
-    img_cv = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
-    overlay = cv2.addWeighted(img_cv, 0.6, heatmap_color, 0.4, 0)
-    overlay_rgb = cv2.cvtColor(overlay, cv2.COLOR_BGR2RGB)
+img_cv = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
+overlay = cv2.addWeighted(img_cv, 0.6, heatmap_color, 0.4, 0)
+overlay_rgb = cv2.cvtColor(overlay, cv2.COLOR_BGR2RGB)
 
-    return overlay_rgb, est_count_final
+return overlay_rgb, est_count_final
+
