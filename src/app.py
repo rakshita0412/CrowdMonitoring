@@ -1,4 +1,5 @@
 import os
+import cv2
 import streamlit as st
 from PIL import Image
 from inference import load_csrnet_model, get_count_and_heatmap
