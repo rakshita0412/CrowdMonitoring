@@ -4,7 +4,7 @@ torchaudio
 streamlit
 numpy
 Pillow
-opencv-python
+opencv-python-headless
 matplotlib
 scipy
 scikit-learn
