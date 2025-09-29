@@ -29,6 +29,7 @@ def get_count_and_heatmap(model, image: Image.Image):
     density_map = np.clip(density_map, 0, None)
     
     est_count = float(density_map.sum())
+    est_count_scaled = est_count * 0.55
     est_count_rounded = round(est_count)  
 
     heatmap = density_map / (density_map.max() + 1e-8)
