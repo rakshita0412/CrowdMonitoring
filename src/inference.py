@@ -28,6 +28,7 @@ def get_count_and_heatmap(model, image: Image.Image, scale_small_crowds=True):
     density_map = pred.squeeze().cpu().numpy()
 
     density_map = np.clip(density_map, 0, None)
+    density_map[density_map < 0.01] = 0
 
     est_count = float(density_map.sum())
 
@@ -37,6 +38,7 @@ def get_count_and_heatmap(model, image: Image.Image, scale_small_crowds=True):
     est_count_final = max(math.ceil(est_count), 1)
 
     heatmap = density_map / (density_map.max() + 1e-8)
+    heatmap[heatmap < 0.05] = 0 
     heatmap = (heatmap * 255).astype(np.uint8)
     heatmap_resized = cv2.resize(heatmap, image.size)
     heatmap_color = cv2.applyColorMap(heatmap_resized, cv2.COLORMAP_JET)
