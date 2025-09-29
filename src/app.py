@@ -3,7 +3,6 @@ import streamlit as st
 from PIL import Image
 from inference import load_csrnet_model, get_count_and_heatmap
 
-print(cv2.__version__)
 
 @st.cache_resource
 def get_model():
