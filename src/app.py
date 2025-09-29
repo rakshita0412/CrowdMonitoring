@@ -4,7 +4,10 @@ from inference import load_csrnet_model, get_count_and_heatmap
 
 @st.cache_resource
 def get_model():
-    return load_csrnet_model("../csrnet_model/csrnet_train.pth")
+    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  
+    MODEL_PATH = os.path.join(BASE_DIR, "csrnet_model", "csrnet_train.pth")
+    model = load_csrnet_model(MODEL_PATH)
+    return model
 
 model = get_model()
 
