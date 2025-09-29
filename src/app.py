@@ -3,6 +3,8 @@ import streamlit as st
 from PIL import Image
 from inference import load_csrnet_model, get_count_and_heatmap
 
+print(cv2.__version__)
+
 @st.cache_resource
 def get_model():
     BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  
@@ -25,3 +27,4 @@ if uploaded_file is not None:
 
     st.image(overlay, caption=f"Estimated Count: {count:.2f}", use_column_width=True)
     st.success(f"Estimated Crowd Count: {count:.2f}")
+    
