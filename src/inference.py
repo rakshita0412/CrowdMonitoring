@@ -5,6 +5,8 @@ from PIL import Image
 import torchvision.transforms as transforms
 from training import CSRNet
 
+print(cv2.__version__)
+
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 transform = transforms.Compose([
