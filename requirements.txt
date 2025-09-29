@@ -1,7 +1,7 @@
+streamlit>=1.18.0
 torch
 torchvision
 torchaudio
-streamlit
 numpy
 Pillow
 opencv-python
