@@ -1,4 +1,5 @@
 import torch
+import math
 import numpy as np
 import cv2
 from PIL import Image
@@ -33,7 +34,7 @@ def get_count_and_heatmap(model, image: Image.Image, scale_small_crowds=True):
     if scale_small_crowds and est_count < 20:
         est_count *= 0.55
 
-    est_count_rounded = round(est_count)
+    est_count_final = max(math.ceil(est_count), 1)
 
     heatmap = density_map / (density_map.max() + 1e-8)
     heatmap = (heatmap * 255).astype(np.uint8)
@@ -44,4 +45,4 @@ def get_count_and_heatmap(model, image: Image.Image, scale_small_crowds=True):
     overlay = cv2.addWeighted(img_cv, 0.6, heatmap_color, 0.4, 0)
     overlay_rgb = cv2.cvtColor(overlay, cv2.COLOR_BGR2RGB)
 
-    return overlay_rgb, est_count_rounded
+    return overlay_rgb, est_count_final
