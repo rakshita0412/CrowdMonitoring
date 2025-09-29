@@ -38,7 +38,7 @@ if uploaded_file is not None:
     if count > CROWD_THRESHOLD:
         st.warning(f"Crowd exceeds threshold ({CROWD_THRESHOLD})! Triggering alert...")
         send_alert_email(
-            to_email="dummyreceiver@example.com",
+            to_email="vipperlarakshita.com",
             subject="Crowd Alert",
             body=f"Estimated crowd count: {count} exceeds threshold of {CROWD_THRESHOLD}."
         )
