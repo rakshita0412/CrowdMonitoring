@@ -1,7 +1,0 @@
-torch==2.2.0
-torchvision==0.17.1
-torchaudio==2.2.0
-streamlit
-numpy
-Pillow
-opencv-python
