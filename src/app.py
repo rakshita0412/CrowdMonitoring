@@ -75,25 +75,24 @@ def send_alert_email(subject, to_email, overlay_img, plot_img, crowd_count, thre
         return False
 
 try:
-    get_cache = st.cache_resource  
+    get_cache = st.cache_resource
 except AttributeError:
-    get_cache = lambda func: st.cache(allow_output_mutation=True)
+    def get_cache(func):
+        return st.cache(allow_output_mutation=True)(func)
 
-
+@get_cache
 def get_model():
     model_path = os.environ.get("CSRNET_MODEL_PATH")
     if not model_path or not os.path.exists(model_path):
         raise FileNotFoundError(
-            "CSRNet model not found. Set CSRNET_MODEL_PATH to the model file location."
+            f"CSRNet model not found at {model_path}. "
+            "Set CSRNET_MODEL_PATH environment variable."
         )
     model = load_csrnet_model(model_path)
     return model
 
-@get_cache
-def get_model_cached():
-    return get_model()
+model = get_model()
 
-model = get_model_cached()
 
 
 st.title("👥 Crowd Monitoring System")
