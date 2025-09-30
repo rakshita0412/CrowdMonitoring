@@ -4,23 +4,18 @@ import streamlit as st
 from PIL import Image
 from inference import load_csrnet_model, get_count_and_heatmap
 import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
+from email.message import EmailMesssage
 
-def send_alert_email(to_email, subject, body):
-    from_email = os.getenv("EMAIL_USER")
-    password = os.getenv("EMAIL_PASS")
-    
-    if not from_email or not password:
-        print("[ERROR] Email credentials not set in environment variables!")
-        return
-
-    msg = MIMEMultipart()
-    msg["From"] = from_email
-    msg["To"] = to_email
+def send_alert_email(subject, body, to):
+    msg = EmailMessage()
+    msg.set_content(body)
     msg["Subject"] = subject
-    msg.attach(MIMEText(body, "plain"))
+    msg["to"] = to
 
+    user = "alertemail@gmail.com"
+    msg['from'] = user
+    pswd = ""
+    
     try:
         server = smtplib.SMTP("smtp.gmail.com", 587)
         server.starttls()
@@ -63,7 +58,7 @@ if uploaded_file is not None:
     if count > CROWD_THRESHOLD:
         st.warning(f"Crowd exceeds threshold ({CROWD_THRESHOLD})! Triggering alert...")
         send_alert_email(
-            to_email="dummytest@example.com",  
             subject="Crowd Alert",
-            body=f"Estimated crowd count: {count} exceeds threshold of {CROWD_THRESHOLD}."
+            body=f"Estimated crowd count: {count} exceeds threshold of {CROWD_THRESHOLD}.",
+            "a@gmail.com"
         )
