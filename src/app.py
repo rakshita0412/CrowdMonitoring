@@ -4,22 +4,22 @@ import streamlit as st
 from PIL import Image
 from inference import load_csrnet_model, get_count_and_heatmap
 import smtplib
-from email.message import EmailMesssage
+from email.message import EmailMessage
 
-def send_alert_email(subject, body, to):
+def send_alert_email(subject, body, to_email):
     msg = EmailMessage()
     msg.set_content(body)
     msg["Subject"] = subject
-    msg["to"] = to
+    msg["To"] = to_email
 
-    user = "alertemail@gmail.com"
-    msg['from'] = user
-    pswd = ""
+    user = "sender@gmail.com"      
+    password = "your_app_password_here"    
+    msg["From"] = user
     
     try:
         server = smtplib.SMTP("smtp.gmail.com", 587)
         server.starttls()
-        server.login(from_email, password)
+        server.login(user, password)
         server.send_message(msg)
         server.quit()
         print(f"[INFO] Alert sent to {to_email}")
@@ -60,5 +60,5 @@ if uploaded_file is not None:
         send_alert_email(
             subject="Crowd Alert",
             body=f"Estimated crowd count: {count} exceeds threshold of {CROWD_THRESHOLD}.",
-            "a@gmail.com"
+            to_email="receiver@gmail.com"  
         )
