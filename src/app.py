@@ -9,12 +9,17 @@ from inference import load_csrnet_model, get_count_and_heatmap
 import smtplib
 from email.message import EmailMessage
 from email.utils import make_msgid
+from dotenv import load_dotenv
+import os
+
+load_dotenv() 
+
 
 def send_alert_email(subject, to_email, overlay_img, plot_img, crowd_count, threshold, uploaded_filename):
     msg = EmailMessage()
     msg["Subject"] = subject
     msg["To"] = to_email
-    msg["From"] = "monitoringcrowd@gmail.com"
+    msg["From"] = os.environ.get("SMTP_USER")
     msg.set_content("This is an HTML email. Please view in HTML capable client.")
 
     overlay_cid = make_msgid(domain='xyz.com')
@@ -34,6 +39,7 @@ def send_alert_email(subject, to_email, overlay_img, plot_img, crowd_count, thre
         <h2 style="color:red;">🚨 Crowd Alert Notification</h2>
         <p><b>Uploaded Image:</b> {uploaded_filename}</p>
         <p><b>Estimated Crowd Count:</b> {crowd_count}</p>
+        <p><b>Crowd exceeds the threshold of {CROWD_THRESHOLD} by {exceed_by} people.</b></p>
         <p><b>Threshold:</b> {threshold}</p>
         <p><b>Status:</b> <span style='color:red;'>Crowd exceeds threshold!</span></p>
         <h3>Heatmap Overlay:</h3>
@@ -53,8 +59,8 @@ def send_alert_email(subject, to_email, overlay_img, plot_img, crowd_count, thre
                                      maintype='image', subtype='png',
                                      cid=plot_cid)
 
-    user = "monitoringcrowd@gmail.com"
-    password = "nbis rmjo ocgb agsp"
+    user = os.environ.get("SMTP_USER")
+    password = os.environ.get("SMTP_PASS")
 
     try:
         server = smtplib.SMTP("smtp.gmail.com", 587)
@@ -102,6 +108,7 @@ if uploaded_file is not None:
     st.success(f"Estimated Crowd Count: {count}")
 
     if count > CROWD_THRESHOLD:
+        exceed_by = count - CROWD_THRESHOLD
         st.warning(f"Crowd exceeds threshold ({CROWD_THRESHOLD})!")
 
         fig, ax = plt.subplots()
@@ -116,7 +123,7 @@ if uploaded_file is not None:
         if st.button("Send Alert Email"):
             success = send_alert_email(
                 subject="🚨 Crowd Alert Notification",
-                to_email="rakshitavipperla@gmail.com",  #change here with recepient mail id 
+                to_email="recipient@example.com",  #change here with recepient mail id 
                 overlay_img=overlay,
                 plot_img=plot_img,
                 crowd_count=count,
