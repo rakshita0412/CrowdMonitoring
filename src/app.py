@@ -104,6 +104,7 @@ if uploaded_file is not None:
     if count > CROWD_THRESHOLD:
         exceed_by = count - CROWD_THRESHOLD
         st.warning(f"Crowd exceeds threshold ({CROWD_THRESHOLD})!")
+        st.info(f"Crowd exceeds the threshold of {CROWD_THRESHOLD} by {exceed_by} people.")
 
         fig, ax = plt.subplots()
         ax.bar(["Threshold", "Estimated"], [CROWD_THRESHOLD, count], color=["red", "blue"])
@@ -121,10 +122,8 @@ if uploaded_file is not None:
                 overlay_img=overlay,
                 plot_img=plot_img,
                 crowd_count=count,
-                f"Crowd exceeds the threshold of {CROWD_THRESHOLD} by {exceed_by} people.",
                 threshold=CROWD_THRESHOLD,
-                uploaded_filename=uploaded_file.name
-            )
+                uploaded_filename=uploaded_file.name)
             if success:
                 st.success("✅ Alert email sent with heatmap and plot!")
             else:
