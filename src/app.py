@@ -102,6 +102,8 @@ if uploaded_file is not None:
     st.success(f"Estimated Crowd Count: {count}")
 
     if count > CROWD_THRESHOLD:
+        exceed_by = count - CROWD_THRESHOLD
+        st.
         st.warning(f"Crowd exceeds threshold ({CROWD_THRESHOLD})!")
 
         fig, ax = plt.subplots()
@@ -116,10 +118,11 @@ if uploaded_file is not None:
         if st.button("Send Alert Email"):
             success = send_alert_email(
                 subject="🚨 Crowd Alert Notification",
-                to_email="rakshitavipperla@gmail.com",  #change here with recepient mail id 
+                to_email="rakshitavipperla@gmail.com",  #change email here with recepient mail id 
                 overlay_img=overlay,
                 plot_img=plot_img,
                 crowd_count=count,
+                body=f"Crowd exceeds the threshold of {CROWD_THRESHOLD} by {exceed_by} people.",
                 threshold=CROWD_THRESHOLD,
                 uploaded_filename=uploaded_file.name
             )
