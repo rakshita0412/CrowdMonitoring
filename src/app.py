@@ -79,14 +79,22 @@ try:
 except AttributeError:
     get_cache = lambda func: st.cache(allow_output_mutation=True)
 
-@get_cache
+
 def get_model():
-    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    MODEL_PATH = os.path.join(BASE_DIR, "csrnet_model", "csrnet_train.pth")
-    model = load_csrnet_model(MODEL_PATH)
+    model_path = os.environ.get("CSRNET_MODEL_PATH")
+    if not model_path or not os.path.exists(model_path):
+        raise FileNotFoundError(
+            "CSRNet model not found. Set CSRNET_MODEL_PATH to the model file location."
+        )
+    model = load_csrnet_model(model_path)
     return model
 
-model = get_model()
+@get_cache
+def get_model_cached():
+    return get_model()
+
+model = get_model_cached()
+
 
 st.title("👥 Crowd Monitoring System")
 st.write("Upload an image to estimate crowd count and visualize heatmap.")
