@@ -1,6 +1,6 @@
-# Ignore PyTorch model weights
+# PyTorch model weights
 *.pth
-*.pt
+csrnet_model/
 
 # Python bytecode
 __pycache__/
@@ -9,15 +9,13 @@ __pycache__/
 # Logs
 *.log
 
-# Environment / virtualenv (if used)
-env/
-venv/
-.venv/
-
-# OS-specific files
-.DS_Store
-Thumbs.db
+# Environment files
+.env
 
 # IDE / editor files
 .vscode/
 .idea/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
