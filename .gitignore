@@ -1,0 +1,23 @@
+# Ignore PyTorch model weights
+*.pth
+*.pt
+
+# Python bytecode
+__pycache__/
+*.py[cod]
+
+# Logs
+*.log
+
+# Environment / virtualenv (if used)
+env/
+venv/
+.venv/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# IDE / editor files
+.vscode/
+.idea/
