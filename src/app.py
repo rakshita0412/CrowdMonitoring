@@ -103,7 +103,6 @@ if uploaded_file is not None:
 
     if count > CROWD_THRESHOLD:
         exceed_by = count - CROWD_THRESHOLD
-        st.
         st.warning(f"Crowd exceeds threshold ({CROWD_THRESHOLD})!")
 
         fig, ax = plt.subplots()
