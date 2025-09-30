@@ -9,12 +9,17 @@ from inference import load_csrnet_model, get_count_and_heatmap
 import smtplib
 from email.message import EmailMessage
 from email.utils import make_msgid
+from dotenv import load_dotenv
+import os
+
+load_dotenv() 
+
 
 def send_alert_email(subject, to_email, overlay_img, plot_img, crowd_count, threshold, uploaded_filename):
     msg = EmailMessage()
     msg["Subject"] = subject
     msg["To"] = to_email
-    msg["From"] = "monitoringcrowd@gmail.com"
+    msg["From"] = os.environ.get("SMTP_USER")
     msg.set_content("This is an HTML email. Please view in HTML capable client.")
 
     overlay_cid = make_msgid(domain='xyz.com')
@@ -54,8 +59,8 @@ def send_alert_email(subject, to_email, overlay_img, plot_img, crowd_count, thre
                                      maintype='image', subtype='png',
                                      cid=plot_cid)
 
-    user = "monitoringcrowd@gmail.com"
-    password = "nbis rmjo ocgb agsp"
+    user = os.environ.get("SMTP_USER")
+    password = os.environ.get("SMTP_PASS")
 
     try:
         server = smtplib.SMTP("smtp.gmail.com", 587)
@@ -105,7 +110,6 @@ if uploaded_file is not None:
     if count > CROWD_THRESHOLD:
         exceed_by = count - CROWD_THRESHOLD
         st.warning(f"Crowd exceeds threshold ({CROWD_THRESHOLD})!")
-        st.info(f"Crowd exceeds the threshold of {CROWD_THRESHOLD} by {exceed_by} people.")
 
         fig, ax = plt.subplots()
         ax.bar(["Threshold", "Estimated"], [CROWD_THRESHOLD, count], color=["red", "blue"])
@@ -119,12 +123,13 @@ if uploaded_file is not None:
         if st.button("Send Alert Email"):
             success = send_alert_email(
                 subject="🚨 Crowd Alert Notification",
-                to_email="recipient@example.com",  #change email here with recepient mail id 
+                to_email="recipient@example.com",  #change here with recepient mail id 
                 overlay_img=overlay,
                 plot_img=plot_img,
                 crowd_count=count,
                 threshold=CROWD_THRESHOLD,
-                uploaded_filename=uploaded_file.name)
+                uploaded_filename=uploaded_file.name
+            )
             if success:
                 st.success("✅ Alert email sent with heatmap and plot!")
             else:
