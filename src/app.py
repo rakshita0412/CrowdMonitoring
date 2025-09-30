@@ -121,7 +121,7 @@ if uploaded_file is not None:
                 overlay_img=overlay,
                 plot_img=plot_img,
                 crowd_count=count,
-                body=f"Crowd exceeds the threshold of {CROWD_THRESHOLD} by {exceed_by} people.",
+                f"Crowd exceeds the threshold of {CROWD_THRESHOLD} by {exceed_by} people.",
                 threshold=CROWD_THRESHOLD,
                 uploaded_filename=uploaded_file.name
             )
