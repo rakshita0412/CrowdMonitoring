@@ -66,35 +66,62 @@
 
 import os
 import io
+import numpy as np
 import cv2
 import streamlit as st
 from PIL import Image
+import matplotlib.pyplot as plt
 from inference import load_csrnet_model, get_count_and_heatmap
 import smtplib
 from email.message import EmailMessage
 from email.utils import make_msgid
-import matplotlib.pyplot as plt
 
-def send_alert_email(subject, body_html, to_email, image_pil=None):
+def send_alert_email(subject, to_email, overlay_img, plot_img, crowd_count, threshold, uploaded_filename):
     msg = EmailMessage()
     msg["Subject"] = subject
     msg["To"] = to_email
     msg["From"] = "monitoringcrowd@gmail.com"
-    msg.set_content("This is a HTML email. Please view in an HTML capable client.")
-    
-    if image_pil:
-        image_cid = make_msgid(domain='xyz.com')
-        msg.add_alternative(body_html.format(image_cid=image_cid[1:-1]), subtype='html')
-        img_byte_arr = io.BytesIO()
-        image_pil.save(img_byte_arr, format='PNG')
-        msg.get_payload()[1].add_related(img_byte_arr.getvalue(),
-                                         maintype='image', subtype='png',
-                                         cid=image_cid)
-    else:
-        msg.add_alternative(body_html, subtype='html')
+    msg.set_content("This is an HTML email. Please view in HTML capable client.")
+
+    overlay_cid = make_msgid(domain='xyz.com')
+    plot_cid = make_msgid(domain='xyz.com')
+
+    buf_overlay = io.BytesIO()
+    overlay_img.save(buf_overlay, format="PNG")
+    buf_overlay.seek(0)
+
+    buf_plot = io.BytesIO()
+    plot_img.save(buf_plot, format="PNG")
+    buf_plot.seek(0)
+
+    html_content = f"""
+    <html>
+    <body>
+        <h2 style="color:red;">🚨 Crowd Alert Notification</h2>
+        <p><b>Uploaded Image:</b> {uploaded_filename}</p>
+        <p><b>Estimated Crowd Count:</b> {crowd_count}</p>
+        <p><b>Threshold:</b> {threshold}</p>
+        <p><b>Status:</b> <span style='color:red;'>Crowd exceeds threshold!</span></p>
+        <h3>Heatmap Overlay:</h3>
+        <img src="cid:{overlay_cid[1:-1]}" width="600"><br><br>
+        <h3>Crowd Comparison Plot:</h3>
+        <img src="cid:{plot_cid[1:-1]}" width="600">
+        <p>Please take necessary action.</p>
+    </body>
+    </html>
+    """
+
+    msg.add_alternative(html_content, subtype='html')
+    msg.get_payload()[0].add_related(buf_overlay.getvalue(),
+                                     maintype='image', subtype='png',
+                                     cid=overlay_cid)
+    msg.get_payload()[0].add_related(buf_plot.getvalue(),
+                                     maintype='image', subtype='png',
+                                     cid=plot_cid)
 
     user = "monitoringcrowd@gmail.com"
-    password = "nbis rmjo ocgb agsp"  
+    password = "nbis rmjo ocgb agsp"
+
     try:
         server = smtplib.SMTP("smtp.gmail.com", 587)
         server.starttls()
@@ -124,15 +151,15 @@ model = get_model()
 st.title("👥 CSRNet Crowd Counting with Alerts")
 st.write("Upload an image to estimate crowd count and visualize heatmap.")
 
-uploaded_file = st.file_uploader("Upload an image", type=["jpg", "png", "jpeg"])
-CROWD_THRESHOLD = 15  
+uploaded_file = st.file_uploader("Upload an image", type=["jpg", "jpeg", "png"])
+CROWD_THRESHOLD = 15
 
 if uploaded_file is not None:
-    img = Image.open(uploaded_file).convert("RGB")
-    st.image(img, caption="Uploaded Image", use_column_width=True)
+    img_pil = Image.open(uploaded_file).convert("RGB")
+    img_cv = cv2.cvtColor(np.array(img_pil), cv2.COLOR_RGB2BGR)
+    st.image(img_pil, caption="Uploaded Image", use_column_width=True)
 
-    overlay, count = get_count_and_heatmap(model, img)
-
+    overlay, count = get_count_and_heatmap(model, img_pil)
     st.image(overlay, caption=f"Estimated Count: {count}", use_column_width=True)
     st.success(f"Estimated Crowd Count: {count}")
 
@@ -143,34 +170,22 @@ if uploaded_file is not None:
         ax.bar(["Threshold", "Estimated"], [CROWD_THRESHOLD, count], color=["red", "blue"])
         ax.set_ylabel("Crowd Count")
         ax.set_title("Crowd Alert Summary")
-        plot_img = Image.fromarray(cv2.cvtColor(cv2.imread(uploaded_file.name), cv2.COLOR_BGR2RGB))
+        buf_plot = io.BytesIO()
+        fig.savefig(buf_plot, format="PNG")
+        buf_plot.seek(0)
+        plot_img = Image.open(buf_plot)
 
-
-        html_content = f"""
-        <html>
-        <body>
-            <h2 style="color:red;">🚨 Crowd Alert Notification</h2>
-            <p>Estimated crowd count: <b>{count}</b></p>
-            <p>Threshold: <b>{CROWD_THRESHOLD}</b></p>
-            <p>Status: <b style='color:red;'>Crowd exceeds threshold!</b></p>
-            <h3>Uploaded Image & Heatmap:</h3>
-            <img src="cid:{{image_cid}}" width="600">
-            <h3>Comparison Plot:</h3>
-            <img src="cid:{{image_cid}}" width="600">
-            <p>Please take necessary action.</p>
-        </body>
-        </html>
-        """
-
-        success = send_alert_email(
-            subject="🚨 Crowd Alert Notification",
-            body_html=html_content,
-            to_email="recipient@gmail.com",
-            image_pil=overlay
-        )
-
-        if success:
-            st.success("✅ Alert email sent with visual summary!")
-        else:
-            st.error("❌ Failed to send alert email. Check logs.")
-
+        if st.button("Send Alert Email"):
+            success = send_alert_email(
+                subject="🚨 Crowd Alert Notification",
+                to_email="rakshitavipperla@gmail.com",  
+                overlay_img=overlay,
+                plot_img=plot_img,
+                crowd_count=count,
+                threshold=CROWD_THRESHOLD,
+                uploaded_filename=uploaded_file.name
+            )
+            if success:
+                st.success("✅ Alert email sent with heatmap and plot!")
+            else:
+                st.error("❌ Failed to send alert email. Check logs.")
