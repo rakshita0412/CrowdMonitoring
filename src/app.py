@@ -160,6 +160,10 @@ if uploaded_file is not None:
     st.image(img_pil, caption="Uploaded Image", use_column_width=True)
 
     overlay, count = get_count_and_heatmap(model, img_pil)
+
+    if isinstance(overlay, np.ndarray):
+        overlay = Image.fromarray(cv2.cvtColor(overlay, cv2.COLOR_BGR2RGB))
+
     st.image(overlay, caption=f"Estimated Count: {count}", use_column_width=True)
     st.success(f"Estimated Crowd Count: {count}")
 
@@ -178,7 +182,7 @@ if uploaded_file is not None:
         if st.button("Send Alert Email"):
             success = send_alert_email(
                 subject="🚨 Crowd Alert Notification",
-                to_email="rakshitavipperla@gmail.com",  
+                to_email="recipient@gmail.com",  
                 overlay_img=overlay,
                 plot_img=plot_img,
                 crowd_count=count,
