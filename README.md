@@ -20,20 +20,18 @@ Demo
 
 
 Installation
-```bash
-git clone https://github.com/rakshita0412/CrowdMonitoring.git
-cd CrowdMonitoring
-pip install -r requirements.txt
-streamlit run src/app.py
+
+- git clone https://github.com/rakshita0412/CrowdMonitoring.git
+- cd CrowdMonitoring
+- pip install -r requirements.txt
+- streamlit run src/app.py
 
 
-##ENVIRONMENT VARIABLES
-```bash
-SMTP_USER=your_email@gmail.com
-SMTP_PASS=your_app_password
-ALERT_RECIPIENT=recipient_email@gmail.com
+ENVIRONMENT VARIABLES
+- SMTP_USER=your_email@gmail.com
+- SMTP_PASS=your_app_password
+- ALERT_RECIPIENT=recipient_email@gmail.com
 
 MODEL WEIGHTS
-```bash
-Place csrnet_train.pth inside the csrnet_model/ folder.
-This repo does not include the trained model due to file size limits.
+- Place csrnet_train.pth inside the csrnet_model/ folder.
+- This repo does not include the trained model due to file size limits.
