@@ -40,7 +40,7 @@ def get_model():
 
 model = get_model()
 
-st.title("👥 CSRNet Crowd Counting with Alerts")
+st.title("👥 Crowd Monitoring System")
 st.write("Upload an image to estimate crowd count and visualize heatmap.")
 
 uploaded_file = st.file_uploader("Upload an image", type=["jpg", "png", "jpeg"])
