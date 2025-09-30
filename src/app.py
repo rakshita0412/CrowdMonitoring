@@ -34,6 +34,7 @@ def send_alert_email(subject, to_email, overlay_img, plot_img, crowd_count, thre
         <h2 style="color:red;">🚨 Crowd Alert Notification</h2>
         <p><b>Uploaded Image:</b> {uploaded_filename}</p>
         <p><b>Estimated Crowd Count:</b> {crowd_count}</p>
+        <p><b>Crowd exceeds the threshold of {CROWD_THRESHOLD} by {exceed_by} people.</b></p>
         <p><b>Threshold:</b> {threshold}</p>
         <p><b>Status:</b> <span style='color:red;'>Crowd exceeds threshold!</span></p>
         <h3>Heatmap Overlay:</h3>
