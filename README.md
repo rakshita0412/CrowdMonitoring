@@ -12,8 +12,8 @@ Features
 
 Demo
 
-![App Screenshot](docs/demo_screenshot1.jpg)
-![Email Screenshot](docs/demo_screenshot2.jpg)
+![App Screenshot](docs/demo_screenshot1.png)
+![Email Screenshot](docs/demo_screenshot2.png)
 
 
 ## Installation
