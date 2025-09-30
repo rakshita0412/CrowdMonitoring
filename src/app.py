@@ -12,8 +12,8 @@ def send_alert_email(subject, body, to_email):
     msg["Subject"] = subject
     msg["To"] = to_email
 
-    user = "sender@gmail.com"      
-    password = "your_app_password_here"    
+    user = "monitoringcrowd@gmail.com"      
+    password = "Crowdmonitoring@123"    
     msg["From"] = user
     
     try:
@@ -60,5 +60,5 @@ if uploaded_file is not None:
         send_alert_email(
             subject="Crowd Alert",
             body=f"Estimated crowd count: {count} exceeds threshold of {CROWD_THRESHOLD}.",
-            to_email="receiver@gmail.com"  
+            to_email="rakshitavipperla@gmail.com"  
         )
