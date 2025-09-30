@@ -13,10 +13,13 @@ Features
 Demo
 
 ![App Screenshot](docs/demo_screenshot1.png)
-![Email Screenshot](docs/demo_screenshot2.png)
+![App Screenshot](docs/demo_screenshot2.png)
+![Email Screenshot](docs/demo_screenshot3.png)
+![Email Screenshot](docs/demo_screenshot4.png)
 
 
-## Installation
+
+Installation
 
 ```bash
 git clone https://github.com/rakshita0412/CrowdMonitoringApp.git
