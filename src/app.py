@@ -182,7 +182,7 @@ if uploaded_file is not None:
         if st.button("Send Alert Email"):
             success = send_alert_email(
                 subject="🚨 Crowd Alert Notification",
-                to_email="recipient@gmail.com",  
+                to_email="rakshitavipperla@gmail.com",  
                 overlay_img=overlay,
                 plot_img=plot_img,
                 crowd_count=count,
