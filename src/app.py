@@ -13,7 +13,7 @@ def send_alert_email(subject, body, to_email):
     msg["To"] = to_email
 
     user = "monitoringcrowd@gmail.com"      
-    password = "Crowdmonitoring@123"    
+    password = "nbis rmjo ocgb agsp"    
     msg["From"] = user
     
     try:
