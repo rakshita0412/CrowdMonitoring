@@ -92,7 +92,7 @@ st.title("👥 Crowd Monitoring System")
 st.write("Upload an image to estimate crowd count and visualize heatmap.")
 
 uploaded_file = st.file_uploader("Upload an image", type=["jpg", "jpeg", "png"])
-CROWD_THRESHOLD = 50
+CROWD_THRESHOLD = 100
 
 if uploaded_file is not None:
     img_pil = Image.open(uploaded_file).convert("RGB")
