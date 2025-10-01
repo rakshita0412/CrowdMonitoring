@@ -10,20 +10,18 @@ import smtplib
 from email.message import EmailMessage
 from email.utils import make_msgid
 from dotenv import load_dotenv
-import os
 
-load_dotenv()  # loads .env variables
+load_dotenv()  # Load environment variables from .env
 
-
-def send_alert_email(subject, to_email, overlay_img, plot_img, crowd_count, threshold, uploaded_filename):
+def send_alert_email(subject, to_email, overlay_img, plot_img, crowd_count, threshold, exceed_by, uploaded_filename):
     msg = EmailMessage()
     msg["Subject"] = subject
     msg["To"] = to_email
-    msg["From"] = "monitoringcrowd@gmail.com"
+    msg["From"] = os.environ.get("SMTP_USER")
     msg.set_content("This is an HTML email. Please view in HTML capable client.")
 
-    overlay_cid = make_msgid(domain='xyz.com')
-    plot_cid = make_msgid(domain='xyz.com')
+    overlay_cid = make_msgid(domain="xyz.com")
+    plot_cid = make_msgid(domain="xyz.com")
 
     buf_overlay = io.BytesIO()
     overlay_img.save(buf_overlay, format="PNG")
@@ -39,6 +37,7 @@ def send_alert_email(subject, to_email, overlay_img, plot_img, crowd_count, thre
         <h2 style="color:red;">🚨 Crowd Alert Notification</h2>
         <p><b>Uploaded Image:</b> {uploaded_filename}</p>
         <p><b>Estimated Crowd Count:</b> {crowd_count}</p>
+        <p><b>Crowd exceeds the threshold of {threshold} by {exceed_by} people.</b></p>
         <p><b>Threshold:</b> {threshold}</p>
         <p><b>Status:</b> <span style='color:red;'>Crowd exceeds threshold!</span></p>
         <h3>Heatmap Overlay:</h3>
@@ -50,13 +49,13 @@ def send_alert_email(subject, to_email, overlay_img, plot_img, crowd_count, thre
     </html>
     """
 
-    msg.add_alternative(html_content, subtype='html')
-    msg.get_payload()[0].add_related(buf_overlay.getvalue(),
-                                     maintype='image', subtype='png',
-                                     cid=overlay_cid)
-    msg.get_payload()[0].add_related(buf_plot.getvalue(),
-                                     maintype='image', subtype='png',
-                                     cid=plot_cid)
+    msg.add_alternative(html_content, subtype="html")
+    msg.get_payload()[0].add_related(
+        buf_overlay.getvalue(), maintype="image", subtype="png", cid=overlay_cid
+    )
+    msg.get_payload()[0].add_related(
+        buf_plot.getvalue(), maintype="image", subtype="png", cid=plot_cid
+    )
 
     user = os.environ.get("SMTP_USER")
     password = os.environ.get("SMTP_PASS")
@@ -74,9 +73,10 @@ def send_alert_email(subject, to_email, overlay_img, plot_img, crowd_count, thre
         return False
 
 try:
-    get_cache = st.cache_resource  
+    get_cache = st.cache_resource
 except AttributeError:
     get_cache = lambda func: st.cache(allow_output_mutation=True)
+
 
 @get_cache
 def get_model():
@@ -85,13 +85,14 @@ def get_model():
     model = load_csrnet_model(MODEL_PATH)
     return model
 
+
 model = get_model()
 
 st.title("👥 Crowd Monitoring System")
 st.write("Upload an image to estimate crowd count and visualize heatmap.")
 
 uploaded_file = st.file_uploader("Upload an image", type=["jpg", "jpeg", "png"])
-CROWD_THRESHOLD = 50
+CROWD_THRESHOLD = 100
 
 if uploaded_file is not None:
     img_pil = Image.open(uploaded_file).convert("RGB")
@@ -105,8 +106,10 @@ if uploaded_file is not None:
 
     st.image(overlay, caption=f"Estimated Count: {count}", use_column_width=True)
     st.success(f"Estimated Crowd Count: {count}")
+    st.info(f"Crowd exceeds the threshold of {threshold} by {exceed_by} people.")
 
     if count > CROWD_THRESHOLD:
+        exceed_by = count - CROWD_THRESHOLD
         st.warning(f"Crowd exceeds threshold ({CROWD_THRESHOLD})!")
 
         fig, ax = plt.subplots()
@@ -121,12 +124,13 @@ if uploaded_file is not None:
         if st.button("Send Alert Email"):
             success = send_alert_email(
                 subject="🚨 Crowd Alert Notification",
-                to_email="receiver@example.com",  #change here with recepient mail id 
+                to_email="receiver@example.com",  # Change this to recipient email
                 overlay_img=overlay,
                 plot_img=plot_img,
                 crowd_count=count,
                 threshold=CROWD_THRESHOLD,
-                uploaded_filename=uploaded_file.name
+                exceed_by=exceed_by,  
+                uploaded_filename=uploaded_file.name,
             )
             if success:
                 st.success("✅ Alert email sent with heatmap and plot!")
