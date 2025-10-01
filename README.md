@@ -33,5 +33,14 @@ ENVIRONMENT VARIABLES
 - ALERT_RECIPIENT=recipient_email@gmail.com
 
 MODEL WEIGHTS
-- Place csrnet_train.pth inside the csrnet_model/ folder.
-- This repo does not include the trained model due to file size limits.
+- This project requires CSRNet model weights (csrnet_train.pth) to run inference.
+- Train the model using the provided training code (src/training.py) and your dataset.
+-  This will generate a weights file (e.g., csrnet_train.pth).
+-  Once obtained, place the file inside the csrnet_model/ folder.
+
+USAGE
+- Upload an image via the app UI.
+- View the estimated crowd count and heatmap overlay.
+- If the count exceeds the configured threshold, an email alert will be sent automatically.
+
+
