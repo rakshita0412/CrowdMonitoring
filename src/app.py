@@ -106,7 +106,7 @@ if uploaded_file is not None:
 
     st.image(overlay, caption=f"Estimated Count: {count}", use_column_width=True)
     st.success(f"Estimated Crowd Count: {count}")
-    st.info(f"Crowd exceeds the threshold of {threshold} by {exceed_by} people.")
+    st.info(f"Crowd exceeds the threshold of {CROWD_THRESHOLD} by {exceed_by} people.")
 
     if count > CROWD_THRESHOLD:
         exceed_by = count - CROWD_THRESHOLD
