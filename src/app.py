@@ -15,7 +15,7 @@ import os
 load_dotenv() 
 
 
-def send_alert_email(subject, to_email, overlay_img, plot_img, crowd_count, threshold, uploaded_filename):
+def send_alert_email(subject, to_email, overlay_img, plot_img, crowd_count, threshold,exceed_by, uploaded_filename):
     msg = EmailMessage()
     msg["Subject"] = subject
     msg["To"] = to_email
@@ -39,7 +39,7 @@ def send_alert_email(subject, to_email, overlay_img, plot_img, crowd_count, thre
         <h2 style="color:red;">🚨 Crowd Alert Notification</h2>
         <p><b>Uploaded Image:</b> {uploaded_filename}</p>
         <p><b>Estimated Crowd Count:</b> {crowd_count}</p>
-        <p><b>Crowd exceeds the threshold of {CROWD_THRESHOLD} by {exceed_by} people.</b></p>
+        <p><b>Crowd exceeds the threshold of {threshold} by {exceed_by} people.</b></p>
         <p><b>Threshold:</b> {threshold}</p>
         <p><b>Status:</b> <span style='color:red;'>Crowd exceeds threshold!</span></p>
         <h3>Heatmap Overlay:</h3>
