@@ -11,14 +11,26 @@ from email.message import EmailMessage
 from email.utils import make_msgid
 from dotenv import load_dotenv
 
-load_dotenv()  # Load environment variables from .env
+# Load environment variables from .env
+load_dotenv()
 
 def send_alert_email(subject, to_email, overlay_img, plot_img, crowd_count, threshold, exceed_by, uploaded_filename):
     msg = EmailMessage()
     msg["Subject"] = subject
     msg["To"] = to_email
     msg["From"] = os.environ.get("SMTP_USER")
-    msg.set_content("This is an HTML email. Please view in HTML capable client.")
+
+    msg.set_content(
+        f"""
+🚨 Crowd Alert Notification 🚨
+
+Uploaded Image: {uploaded_filename}
+Estimated Crowd Count: {crowd_count}
+Crowd exceeds the threshold of {threshold} by {exceed_by} people.
+Threshold: {threshold}
+Status: Crowd exceeds threshold!
+"""
+    )
 
     overlay_cid = make_msgid(domain="xyz.com")
     plot_cid = make_msgid(domain="xyz.com")
@@ -50,10 +62,11 @@ def send_alert_email(subject, to_email, overlay_img, plot_img, crowd_count, thre
     """
 
     msg.add_alternative(html_content, subtype="html")
-    msg.get_payload()[0].add_related(
+
+    msg.get_payload()[1].add_related(
         buf_overlay.getvalue(), maintype="image", subtype="png", cid=overlay_cid
     )
-    msg.get_payload()[0].add_related(
+    msg.get_payload()[1].add_related(
         buf_plot.getvalue(), maintype="image", subtype="png", cid=plot_cid
     )
 
@@ -92,7 +105,7 @@ st.title("👥 Crowd Monitoring System")
 st.write("Upload an image to estimate crowd count and visualize heatmap.")
 
 uploaded_file = st.file_uploader("Upload an image", type=["jpg", "jpeg", "png"])
-CROWD_THRESHOLD = 100
+CROWD_THRESHOLD = 100  # set your threshold here
 
 if uploaded_file is not None:
     img_pil = Image.open(uploaded_file).convert("RGB")
@@ -115,6 +128,7 @@ if uploaded_file is not None:
         ax.bar(["Threshold", "Estimated"], [CROWD_THRESHOLD, count], color=["red", "blue"])
         ax.set_ylabel("Crowd Count")
         ax.set_title("Crowd Alert Summary")
+
         buf_plot = io.BytesIO()
         fig.savefig(buf_plot, format="PNG")
         buf_plot.seek(0)
@@ -123,12 +137,12 @@ if uploaded_file is not None:
         if st.button("Send Alert Email"):
             success = send_alert_email(
                 subject="🚨 Crowd Alert Notification",
-                to_email="receiver@example.com",  # Change this to recipient email
+                to_email="receiver@example.com",  #  replace with recipient
                 overlay_img=overlay,
                 plot_img=plot_img,
                 crowd_count=count,
                 threshold=CROWD_THRESHOLD,
-                exceed_by=exceed_by,  
+                exceed_by=exceed_by,
                 uploaded_filename=uploaded_file.name,
             )
             if success:
