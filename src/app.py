@@ -106,11 +106,11 @@ if uploaded_file is not None:
 
     st.image(overlay, caption=f"Estimated Count: {count}", use_column_width=True)
     st.success(f"Estimated Crowd Count: {count}")
-    st.info(f"Crowd exceeds the threshold of {CROWD_THRESHOLD} by {exceed_by} people.")
 
     if count > CROWD_THRESHOLD:
         exceed_by = count - CROWD_THRESHOLD
         st.warning(f"Crowd exceeds threshold ({CROWD_THRESHOLD})!")
+        st.info(f"Crowd exceeds the threshold of {CROWD_THRESHOLD} by {exceed_by} people.")
 
         fig, ax = plt.subplots()
         ax.bar(["Threshold", "Estimated"], [CROWD_THRESHOLD, count], color=["red", "blue"])
