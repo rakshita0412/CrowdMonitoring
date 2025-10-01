@@ -1,4 +1,5 @@
 streamlit>=1.18.0
+python-dotenv>=1.0.0
 torch
 torchvision
 torchaudio
@@ -8,3 +9,4 @@ opencv-python
 matplotlib
 scipy
 scikit-learn
+Altair
