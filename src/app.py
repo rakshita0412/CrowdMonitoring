@@ -128,6 +128,7 @@ if uploaded_file is not None:
                 plot_img=plot_img,
                 crowd_count=count,
                 threshold=CROWD_THRESHOLD,
+                exceed_by = exceed_by,
                 uploaded_filename=uploaded_file.name
             )
             if success:
